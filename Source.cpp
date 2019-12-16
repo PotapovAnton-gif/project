@@ -2,41 +2,55 @@
 #include <GL/glut.h>
 #include <cmath>
 using namespace std;
-void renderBall(double x, double y) {
-	double r = 0.1;
-	double cx = x;
-	double cy = y;
-	glColor3f(1.0, 1.0, 0.0);
-	int num_segments = 20;
-	glBegin(GL_POLYGON);
-	for (int ii = 0; ii < num_segments; ii++) {
-		double theta = 2 * 3.14 * float(ii) / float(num_segments);
-		double x = r * cosf(theta);
-		double y = r * sinf(theta);
-		glVertex2d(x + cx, y + cy);
+double ang = 0, PI = 1.0471975512, w = 5.0, t = 0, Vx = 2 , Vy = 3, g = 9.81, x = 0, y = 0, a = 2, m = 2, b = 100.0;
+double const T = 3.06122, dt = 0.00001;
+
+int n = 0; 
+
+void sphera(double x, double y) {
+
+	glBegin(GL_TRIANGLES);
+	if (n % 8 == 0) {
+		glColor3f(1.0, 0.50, 0.30);
 	}
+	else {
+		glColor3f(0.50, 1.0, 0.30);
+	} n++;
+	glVertex2f(x, y);
+	glVertex2f(x + 0.1 * cos(ang + w * t),y + 0.1 * sin(ang + w * t));
+	glVertex2f(x + 0.1 * cos(ang + PI / 8 + w * t),y + 0.1 * sin(ang + PI / 8 + w * t));
+
 	glEnd();
+	glFlush();
+	if (n % 12 != 0) {
+		ang += PI / 8;
+		if (y >= 0) {
+			glutPostRedisplay();
+		} else{
+			cout << w;
+		}
+	}
 }
 
-double Vx = 1, Vy = 3, g = 9.81, x = 0, y = 0, a = 0 , m = 2, t = 0;
-double const T = 3.06122, dt = 0.0001;
 void display() {
-
 	t += dt;
-	cout << t << " " << x << " " << y << endl;
 	if (Vy > 0) {
 		Vy -= g * dt + (Vy * a) / m * dt;
 	}
 	else {
 		Vy -= g * dt - (Vy * a) / m * dt;
 	}
-	Vx -= (Vx * a) / m * dt;
-
+	if (Vx != 0) {
+		Vx -= ((Vx * a) / m) * dt;
+	}
+	if (w > 0) {
+		w -= ((w * b) / m) * dt;
+	}
 	x += Vx * dt;
 	y += Vy * dt;
 	glBegin(GL_POINTS);
 	glColor3f(0.0, 0.0, 0.0);
-	glVertex2f(x, y);
+	sphera(x, y);
 	glEnd();
 	glFlush();
 	if (y >= 0) {
@@ -50,7 +64,7 @@ int main(int argc, char** argv) {
 	glutInitWindowSize(1080, 720);
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow("Experement");
-	glClearColor(1.0, 1.0, 1.0, 0);
+	glClearColor(0.0, 0.0,01.0, 0);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(0.0, 1.0, 0.0, 1.0, 0.0, 0.0);
